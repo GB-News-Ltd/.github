@@ -1,0 +1,51 @@
+name: Chore / tech debt
+description: Maintenance, dependency upgrades, refactors, or process work.
+title: "[chore]: "
+labels: ["chore", "triage"]
+body:
+  - type: input
+    id: ticket
+    attributes:
+      label: Ticket / issue ID
+      description: Prefer an ID for `chore/<ticket-id>-…` branches. Jira specifically is optional.
+      placeholder: GBN-1234
+    validations:
+      required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Dependencies
+        - Refactor / cleanup
+        - CI / DX
+        - Docs
+        - Observability
+        - Compliance / audit
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs doing
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why now
+      description: Risk if deferred, or benefit if done.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Out of scope
+      description: Explicit non-goals keep PRs reviewable.
+    validations:
+      required: false

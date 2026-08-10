@@ -1,0 +1,86 @@
+name: Incident / SEV
+description: Production incident or near-miss requiring coordinated response.
+title: "[incident]: "
+labels: ["incident", "priority:high"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use for live incidents and serious near-misses. Page on-call via your usual channel first; this issue is the paper trail.
+        Jira / Statuspage links are optional.
+
+  - type: input
+    id: ticket
+    attributes:
+      label: Ticket / incident ID (optional)
+      description: Jira, Linear, or GitHub issue. Hotfixes use `hotfix/<ticket-id>-…` from `master`.
+      placeholder: GBN-1234
+    validations:
+      required: false
+
+  - type: dropdown
+    id: sev
+    attributes:
+      label: Severity
+      options:
+        - SEV-1 — Site-wide / major audience impact
+        - SEV-2 — Significant feature / region impact
+        - SEV-3 — Limited impact / elevated error rate
+        - Near-miss — No audience impact; process learning
+    validations:
+      required: true
+
+  - type: input
+    id: impact
+    attributes:
+      label: Audience / business impact
+      placeholder: Live page 5xx for ~12 min; UK web only
+    validations:
+      required: true
+
+  - type: input
+    id: started
+    attributes:
+      label: Detected at (UTC)
+      placeholder: 2026-08-10 11:04 UTC
+    validations:
+      required: true
+
+  - type: textarea
+    id: timeline
+    attributes:
+      label: Timeline
+      description: Detection → mitigation → resolution. Bullets are fine.
+      placeholder: |
+        - 11:04 Detected via PagerDuty / Grafana
+        - 11:07 War room opened
+        - 11:18 Mitigated (rollback / flag)
+        - 11:40 Resolved
+    validations:
+      required: true
+
+  - type: textarea
+    id: systems
+    attributes:
+      label: Systems involved
+      placeholder: |
+        - api-content
+        - Cloudflare
+        - RDS primary
+    validations:
+      required: true
+
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Mitigation / current status
+    validations:
+      required: true
+
+  - type: textarea
+    id: followups
+    attributes:
+      label: Follow-ups
+      description: Action items with owners. Create separate issues/PRs as needed.
+    validations:
+      required: false

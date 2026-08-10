@@ -1,0 +1,31 @@
+---
+name: Proposal
+description: Lightweight RFC / design discussion (optional alternative to issues)
+title: "[proposal]: "
+labels: ["proposal"]
+body:
+  - type: input
+    id: ticket
+    attributes:
+      label: Ticket / issue ID (optional)
+      placeholder: GBN-1234
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+    validations:
+      required: true
+  - type: textarea
+    id: open_questions
+    attributes:
+      label: Open questions
+    validations:
+      required: false

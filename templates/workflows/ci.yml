@@ -1,0 +1,54 @@
+# Product-repo CI aligned to GB News branching strategy.
+# Save as `.github/workflows/ci.yml` in Backend / Web / Mobile / Services / Pipelines repos.
+name: CI
+
+on:
+  push:
+    branches:
+      - "feature/**"
+      - "bugfix/**"
+      - "chore/**"
+      - "spike/**"
+      - "hotfix/**"
+      - "release/**"
+      - dev
+      - staging
+      - master
+  pull_request:
+    branches: [dev, staging, master]
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  pull-requests: write
+
+jobs:
+  merge-source-guard:
+    if: github.event_name == 'pull_request'
+    uses: GB-News-Ltd/.github/.github/workflows/merge-source-guard.yml@main
+
+  ci:
+    uses: GB-News-Ltd/.github/.github/workflows/reusable-ci.yml@main
+    with:
+      node-version: "22"
+      working-directory: "."
+      package-manager: npm
+      install-command: npm ci
+    secrets: inherit
+
+  codeql:
+    if: github.event_name == 'pull_request' && github.base_ref == 'dev'
+    uses: GB-News-Ltd/.github/.github/workflows/codeql-analysis.yml@main
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    with:
+      languages: javascript-typescript
+
+  # Deploy + environment-specific suites are repo-specific.
+  # Hook your CD (Argo / Octopus / etc.) on merge events:
+  #   merge → dev      : deploy Dev + branch-sanity
+  #   merge → staging  : deploy Staging + full regression; notify QA Lead
+  #   merge → master   : deploy Prod + smoke; tag vX.Y.Z; changelog

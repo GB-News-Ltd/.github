@@ -1,0 +1,94 @@
+name: Merge source guard (reusable)
+
+# Enforces allowed head-branch patterns when opening PRs into master / staging / dev.
+# GitHub branch protection cannot restrict source branch natively — this is the org workaround.
+
+on:
+  workflow_call:
+
+    inputs:
+      master_allowed:
+        description: Space-separated patterns allowed into master
+        type: string
+        required: false
+        default: "staging hotfix/*"
+      staging_allowed:
+        type: string
+        required: false
+        default: "dev hotfix/*"
+      dev_allowed:
+        type: string
+        required: false
+        default: "feature/* bugfix/* chore/* spike/* hotfix/* release/*"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  guard:
+    name: Merge source guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR head → base
+        env:
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+          MASTER_ALLOWED: ${{ inputs.master_allowed }}
+          STAGING_ALLOWED: ${{ inputs.staging_allowed }}
+          DEV_ALLOWED: ${{ inputs.dev_allowed }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          match_any() {
+            local head="$1"
+            shift
+            local pat
+            for pat in "$@"; do
+              case "$head" in
+                $pat) return 0 ;;
+              esac
+            done
+            return 1
+          }
+
+          echo "Base: $BASE"
+          echo "Head: $HEAD"
+
+          case "$BASE" in
+            master)
+              # shellcheck disable=SC2086
+              if match_any "$HEAD" $MASTER_ALLOWED; then
+                echo "OK: $HEAD → master"
+                exit 0
+              fi
+              MSG="PRs into master must come from: ${MASTER_ALLOWED} (got: ${HEAD})"
+              ;;
+            staging)
+              # shellcheck disable=SC2086
+              if match_any "$HEAD" $STAGING_ALLOWED; then
+                echo "OK: $HEAD → staging"
+                exit 0
+              fi
+              MSG="PRs into staging must come from: ${STAGING_ALLOWED} (got: ${HEAD})"
+              ;;
+            dev)
+              # shellcheck disable=SC2086
+              if match_any "$HEAD" $DEV_ALLOWED; then
+                echo "OK: $HEAD → dev"
+                exit 0
+              fi
+              MSG="PRs into dev must come from: ${DEV_ALLOWED} (got: ${HEAD})"
+              ;;
+            *)
+              echo "No merge-source policy for base branch '$BASE' — allowing."
+              exit 0
+              ;;
+          esac
+
+          echo "::error::$MSG"
+          if command -v gh >/dev/null 2>&1; then
+            gh pr comment "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --body "**Merge source guard:** ${MSG}" || true
+          fi
+          exit 1

@@ -1,0 +1,91 @@
+name: Feature request
+description: Propose a product or engineering change.
+title: "[feat]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Frame the problem before the solution.
+        Prefer a **ticket/issue ID** (Jira, Linear, or GitHub Issue) for branch naming. Jira specifically is optional.
+
+  - type: input
+    id: ticket
+    attributes:
+      label: Ticket / issue ID
+      description: Jira (`GBN-1234`), Linear, or GitHub issue number.
+      placeholder: GBN-1234
+    validations:
+      required: false
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Domain
+      options:
+        - Web / CMS
+        - Mobile
+        - Video / Live
+        - Data / Analytics
+        - Platform / Infra
+        - Internal tooling
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Who is affected and what is painful today?
+      placeholder: Editors cannot schedule a homepage module more than 7 days ahead…
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should change? Keep it concrete.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What else did you evaluate? Why not those?
+    validations:
+      required: false
+
+  - type: textarea
+    id: success
+    attributes:
+      label: Success criteria
+      description: How will we know this worked? Prefer measurable outcomes.
+      placeholder: |
+        - Editors can schedule modules up to 90 days ahead
+        - No increase in publish p95 latency
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Suggested priority
+      options:
+        - P0 — Blocking current release
+        - P1 — Next sprint
+        - P2 — Backlog (high)
+        - P3 — Backlog (low) / nice-to-have
+      default: 2
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I checked existing issues / roadmap items for overlap
+          required: true

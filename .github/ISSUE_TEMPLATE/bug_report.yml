@@ -1,0 +1,122 @@
+name: Bug report
+description: Something is broken or behaving incorrectly in a GB News system.
+title: "[bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Precise reports ship faster. Include reproduction steps and impact.
+        Include a **ticket/issue ID** when one exists (Jira, Linear, or GitHub Issue). Jira specifically is optional.
+
+  - type: input
+    id: ticket
+    attributes:
+      label: Ticket / issue ID
+      description: Jira (`GBN-1234`), Linear, or GitHub issue number. Used in branch names as `<type>/<ticket-id>-…`.
+      placeholder: GBN-1234
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How bad is it in production / staging?
+      options:
+        - S1 — Outage / data loss / security exposure
+        - S2 — Major feature broken; no practical workaround
+        - S3 — Degraded; workaround exists
+        - S4 — Minor / cosmetic
+      default: 2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Production
+        - Staging
+        - Preview / PR
+        - Local
+        - Unknown
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: service
+    attributes:
+      label: Service / repository
+      description: Repo name, service name, or URL path affected.
+      placeholder: e.g. web-cms / api-content / gbn.co.uk/live
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences. What went wrong?
+      placeholder: Live blog timestamps render 1 hour ahead for UK viewers after DST change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Minimal steps from a clean state.
+      placeholder: |
+        1. Open …
+        2. Click …
+        3. Observe …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Logs, screenshots, trace IDs, request IDs, HAR, metrics links.
+      placeholder: |
+        - Trace ID:
+        - Log link:
+        - Screenshot / recording:
+    validations:
+      required: false
+
+  - type: input
+    id: regression
+    attributes:
+      label: Regression? (optional)
+      description: Last known good version/commit/deploy, if known.
+      placeholder: worked on 2026-08-01 / sha abc1234
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues for duplicates
+          required: true
+        - label: This is not a security vulnerability (those go via SECURITY.md)
+          required: true

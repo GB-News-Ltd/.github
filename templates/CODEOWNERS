@@ -1,0 +1,11 @@
+# Product-repo CODEOWNERS — flat by default (one Lead per repo).
+# Replace <team-or-lead> for Backend, Frontend Web, Android, iOS, Services, or Pipelines.
+#
+# Last matching pattern wins — keep a single `*` line listing Lead + QA Lead.
+# Path-scoped ownership only when this repo outgrows single-Lead review capacity.
+#
+# For staging/master-only QA enforcement, prefer an org ruleset
+# "require review from @GB-News-Ltd/qa-leads" on those branches, and keep
+# CODEOWNERS as just the team Lead.
+
+* @GB-News-Ltd/<team-or-lead> @GB-News-Ltd/qa-leads

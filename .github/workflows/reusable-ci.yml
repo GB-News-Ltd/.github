@@ -1,0 +1,80 @@
+name: Reusable CI
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node.js version
+        type: string
+        required: false
+        default: "22"
+      working-directory:
+        description: App directory for install/test/lint
+        type: string
+        required: false
+        default: "."
+      package-manager:
+        description: npm | pnpm | yarn (cache key for setup-node)
+        type: string
+        required: false
+        default: npm
+      install-command:
+        type: string
+        required: false
+        default: "npm ci"
+      lint-command:
+        type: string
+        required: false
+        default: "npm run lint --if-present"
+      test-command:
+        type: string
+        required: false
+        default: "npm test --if-present"
+      build-command:
+        type: string
+        required: false
+        default: "npm run build --if-present"
+      runner:
+        type: string
+        required: false
+        default: ubuntu-latest
+      enable-node:
+        description: When false, skips Node setup and npm scripts
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Lint · Test · Build
+    runs-on: ${{ inputs.runner }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: CI setup (composite)
+        if: inputs.enable-node
+        uses: GB-News-Ltd/.github/.github/actions/ci-action@main
+        with:
+          node-version: ${{ inputs.node-version }}
+          working-directory: ${{ inputs.working-directory }}
+          package-manager: ${{ inputs.package-manager }}
+          install-command: ${{ inputs.install-command }}
+
+      - name: Lint
+        if: inputs.enable-node
+        run: ${{ inputs.lint-command }}
+
+      - name: Test
+        if: inputs.enable-node
+        run: ${{ inputs.test-command }}
+
+      - name: Build
+        if: inputs.enable-node
+        run: ${{ inputs.build-command }}

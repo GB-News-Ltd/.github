@@ -1,0 +1,15 @@
+# Default CODEOWNERS for GB-News-Ltd/.github (org defaults repo)
+#
+# Product repos use a FLAT model: one Lead (or team) for the whole repo.
+# See templates/CODEOWNERS and docs/handbook/branching.md § CODEOWNERS.
+#
+# Syntax: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+* @GB-News-Ltd/platform-engineering
+
+/.github/ @GB-News-Ltd/platform-engineering
+/CODEOWNERS @GB-News-Ltd/platform-engineering
+/SECURITY.md @GB-News-Ltd/platform-engineering @GB-News-Ltd/security
+/SECURITY_POLICY.md @GB-News-Ltd/platform-engineering @GB-News-Ltd/security
+/docs/ @GB-News-Ltd/platform-engineering
+/repo-metadata/ @GB-News-Ltd/platform-engineering

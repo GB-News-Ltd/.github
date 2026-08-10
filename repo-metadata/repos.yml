@@ -1,0 +1,40 @@
+version: 1
+repos:
+  - name: .github
+    description: Org defaults, reusable workflows, handbook, and templates
+    domain: platform
+    criticality: high
+    default_branch: main
+    long_lived_branches: [main]
+    owners:
+      github_team: GB-News-Ltd/platform-engineering
+      escalate: GB-News-Ltd/security
+    contacts:
+      oncall: null
+      slack: "#eng-platform"
+    jira:
+      project: null
+    languages:
+      - yaml
+      - markdown
+    lifecycle: active
+    notes: Meta-repo; product repos use master/staging/dev per branching handbook.
+
+  # Example product repo — copy per Backend / Web / Android / iOS / Services / Pipelines
+  # - name: backend
+  #   description: GB News backend services
+  #   domain: other
+  #   criticality: critical
+  #   default_branch: master
+  #   long_lived_branches: [master, staging, dev]
+  #   owners:
+  #     github_team: GB-News-Ltd/backend
+  #     escalate: GB-News-Ltd/qa-leads
+  #   contacts:
+  #     oncall: https://example/oncall/backend
+  #     slack: "#eng-backend"
+  #   jira:
+  #     project: GBN
+  #   languages: [typescript]
+  #   lifecycle: active
+  #   notes: Squash-only; merge-source guard required on master/staging/dev.

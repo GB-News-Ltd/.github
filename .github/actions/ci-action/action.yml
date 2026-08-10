@@ -1,0 +1,37 @@
+name: GB News CI setup
+description: Checkout-adjacent setup — Node toolchain, dependency install, cache-friendly defaults.
+inputs:
+  node-version:
+    description: Node.js version
+    required: false
+    default: "22"
+  working-directory:
+    description: Directory containing package manager lockfile
+    required: false
+    default: "."
+  install-command:
+    description: Install command (npm ci, pnpm install --frozen-lockfile, yarn --immutable, …)
+    required: false
+    default: "npm ci"
+  package-manager:
+    description: npm | pnpm | yarn — controls cache
+    required: false
+    default: npm
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.package-manager }}
+        cache-dependency-path: |
+          ${{ inputs.working-directory }}/package-lock.json
+          ${{ inputs.working-directory }}/pnpm-lock.yaml
+          ${{ inputs.working-directory }}/yarn.lock
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: ${{ inputs.install-command }}

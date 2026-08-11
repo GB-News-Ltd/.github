@@ -1,57 +1,82 @@
 ## Summary
 
-<!-- What changed and why (1–3 bullets). Lead with intent, not file lists. -->
+<!-- Intent first (why), then what changed. 1–3 bullets. No file dumps. -->
 
 -
 
-## Ticket / issue ID
+## Traceability
 
-<!-- Required: Jira (e.g. GBN-1234), Linear, or GitHub issue #. Jira specifically is optional. -->
+| Field | Value |
+|-------|--------|
+| Ticket / issue | <!-- `GBN-1234` · Linear · GitHub `#123` — required on the branch name; Jira specifically optional --> |
+| Head → base | <!-- e.g. `feature/GBN-1234-add-oauth` → `dev` --> |
+| Related PRs / ADRs | <!-- n/a or links --> |
+
+## Change class
+
+- [ ] `feat` — new capability
+- [ ] `fix` — bugfix / hotfix
+- [ ] `refactor` — behaviour-preserving restructure
+- [ ] `chore` — deps, CI, tooling, spike
+- [ ] `docs` — documentation only
+- [ ] `security` — hardening / vuln remediation
+- [ ] **Breaking** — callers or contracts change (call out migration below)
+
+## Merge path
+
+Select the path this PR is on (must match [branching policy](https://github.com/GB-News-Ltd/.github/blob/main/docs/handbook/branching.md)):
+
+- [ ] **Integration** — `feature|bugfix|chore|spike/*` → `dev`
+- [ ] **Release cut** — `dev` → `staging`
+- [ ] **Production** — `staging` → `master`
+- [ ] **Emergency** — `hotfix/*` → `master` or `staging`  
+      - [ ] Labelled `emergency-merge`  
+      - [ ] Cherry-pick plan for `staging` **and** `dev` documented below  
+      - [ ] QA Lead acknowledgement recorded on this PR
+
+## Validation
+
+### Test plan
+
+<!-- Commands a reviewer can run + expected signal (exit code, assertion, panel). -->
+
+```bash
+# e.g. npm test -- <scope>
+# e.g. curl -sS "$BASE_URL/health" | jq .
+```
+
+- [ ] Unit / component
+- [ ] Integration / e2e (if applicable)
+- [ ] Manual / exploratory (steps below)
+
+Manual steps:
+
+1.
+2.
+
+### Observability & evidence
+
+<!-- Attach or link: screenshots, traces, logs, Grafana/Datadog, before/after. -->
 
 -
 
-## Target branch
+## Risk & operability
 
-- [ ] `dev` ← `feature/*` | `bugfix/*` | `chore/*` | `spike/*`
-- [ ] `staging` ← `dev` (release cut) or `hotfix/*`
-- [ ] `master` ← `staging` or `hotfix/*` (emergency)
-- [ ] Emergency: labelled `emergency-merge`; cherry-pick plan for `staging` + `dev`
-
-## Type of change
-
-- [ ] Bug fix (`bugfix` / `hotfix`)
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Chore / spike / docs / CI
-- [ ] Security hardening
-
-## Test plan
-
-<!-- Exact steps a reviewer can run. Prefer commands + expected signals. -->
-
-- [ ]
-- [ ]
-
-## Risk & rollout
-
-| Area | Notes |
-|------|--------|
-| Blast radius | <!-- services / audiences touched --> |
-| Feature flag | <!-- name / default off? / n/a --> |
-| Rollback | <!-- required for risky / master-bound changes --> |
-| Data / migrations | <!-- none / forward-only / dual-write --> |
-| Screenshots (UI) | <!-- attach below or n/a --> |
+| Dimension | Assessment |
+|-----------|------------|
+| Blast radius | <!-- services, surfaces, audience segments --> |
+| Feature flag | <!-- name · default off? · n/a --> |
+| Rollback | <!-- revert squash · previous tag · flag off — required for `staging`/`master` --> |
+| Data / migrations | <!-- none · expand/contract · dual-write · backfill --> |
+| Perf / cost | <!-- n/a · expected delta --> |
+| Security / privacy | <!-- authz, PII, secrets — n/a if untouched --> |
 
 ## Checklist
 
-- [ ] Branch named `<type>/<ticket-id>-<short-description>`
-- [ ] Self-reviewed; no secrets, credentials, or PII
-- [ ] Tests added/updated where behaviour changed
+- [ ] Branch: `<type>/<ticket-id>-<short-kebab-description>`
+- [ ] PR title is squash-ready (`feat:`, `fix:`, `chore:`, …) — it becomes the commit on the target
+- [ ] Self-reviewed diff; no secrets, credentials, or audience PII
+- [ ] Tests updated for behaviour changes; CI green
 - [ ] Docs / runbooks updated if operators need to know
-- [ ] CODEOWNERS / QA Lead will auto-request where required
-- [ ] Squash-ready PR title (`feat:`, `fix:`, `chore:`, …)
-- [ ] Hotfix only: QA Lead acknowledgement recorded on this PR
-
-## Screenshots / evidence (if UI or observable)
-
-<!-- Before/after, Grafana panel, trace, curl output -->
+- [ ] Merge-source guard will pass for this head → base
+- [ ] CODEOWNERS / QA path will request the right reviewers

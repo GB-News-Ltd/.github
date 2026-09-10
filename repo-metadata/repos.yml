@@ -20,7 +20,26 @@ repos:
     lifecycle: active
     notes: Meta-repo; product repos use master/staging/dev per branching handbook.
 
-  # Example product repo — copy per Backend / Web / Android / iOS / Services / Pipelines
+  - name: app-iOS
+    description: GB News iOS app (Tuist / TCA)
+    domain: ios
+    criticality: critical
+    default_branch: master
+    long_lived_branches: [master, staging, dev]
+    owners:
+      github_team: apexapambhar
+      escalate: GB-News-Ltd/qa-leads
+    contacts:
+      oncall: null
+      slack: "#eng-ios"
+    jira:
+      project: GNA
+    languages:
+      - swift
+    lifecycle: active
+    notes: Lead @apexapambhar. Squash-only; merge-source guard required on master/staging/dev.
+
+  # Example product repo — copy per Backend / Web / Android / Services / Pipelines
   # - name: backend
   #   description: GB News backend services
   #   domain: other

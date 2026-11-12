@@ -15,7 +15,7 @@ Also set repo-wide: **Allow squash merging only** (disable merge commits & rebas
 - Require conversation resolution before merging (recommended)
 - Require signed commits (recommended, optional)
 
-Wire required checks to the workflows in [`templates/workflows/`](../../templates/workflows/).
+Wire required checks to the workflows in [`templates/workflows/`](../../templates/workflows/). The org requires **one** check, `CI gate`; see [Required check: CI gate](#required-check-ci-gate).
 
 ## `master` (production)
 
@@ -24,7 +24,7 @@ Wire required checks to the workflows in [`templates/workflows/`](../../template
 | Approvals | **2** |
 | Code owners | Required (Lead + QA Lead via CODEOWNERS) |
 | Who can merge | Release managers / QA Lead / Eng Leads only |
-| Required checks | `CI / Lint · Test · Build`, `Merge source guard`, smoke/sanity job |
+| Required checks | `CI gate` (covers lint/test/build and Merge source guard), smoke/sanity job |
 | Allowed sources | `staging`, `hotfix/*` — enforced by merge-source-guard |
 | Deploy | Automatic after smoke; tag `vX.Y.Z` |
 
@@ -33,7 +33,7 @@ Wire required checks to the workflows in [`templates/workflows/`](../../template
 | Rule | Value |
 |------|--------|
 | Approvals | **1** + QA Lead sign-off (CODEOWNERS) |
-| Required checks | `CI / …`, `Merge source guard`, full regression/sanity |
+| Required checks | `CI gate`, full regression/sanity |
 | Allowed sources | `dev`, `hotfix/*` |
 
 ## `dev` (integration)
@@ -41,7 +41,7 @@ Wire required checks to the workflows in [`templates/workflows/`](../../template
 | Rule | Value |
 |------|--------|
 | Approvals | **1** (team Lead / designated via CODEOWNERS) |
-| Required checks | `CI / …` (lint, unit, build), CodeQL on PRs, `Merge source guard` |
+| Required checks | `CI gate` (lint, unit, build, Merge source guard); CodeQL on PRs (separate workflow) |
 | Allowed sources | `feature/*`, `bugfix/*`, `chore/*`, `spike/*`, `hotfix/*` |
 
 ## `feature/*`, `bugfix/*`, `hotfix/*`, …
@@ -68,7 +68,45 @@ jobs:
     uses: GB-News-Ltd/.github/.github/workflows/merge-source-guard.yml@main
 ```
 
-Mark **Merge source guard** as a required status check on `master`, `staging`, and `dev`.
+The guard is one of the jobs `CI gate` depends on, so requiring `CI gate` also requires the guard.
+
+## Required check: CI gate
+
+Every product repo's `ci.yml` ends with a job named exactly **`CI gate`** ([template](../../templates/workflows/ci.yml)). It `needs` every other CI job, runs with `if: always()`, and fails unless each of them passed or was skipped. The org requires only this one name, so repos can add, rename or remove CI jobs without anyone changing a ruleset.
+
+**Why a separate, opt-in ruleset.** A required check that never reports blocks every PR. Several org repos have no workflows, and the others name their jobs differently, so requiring checks in `protect-master` / `staging-protect` would block those repos. Instead, a repo opts in with a custom property once its `CI gate` job is in place.
+
+### Org settings (owner)
+
+1. **Organization → Settings → Repository → Custom properties → New property**
+   - Name `ci_gate`, type **True/false**, default **false**, "Allow repository actors to set this property" **off**.
+2. On each repo whose `ci.yml` has the `CI gate` job on `master`, `staging` (and `dev` if used): **Organization → Settings → Custom properties**, select the repo, set `ci_gate` = `true`.
+3. **Organization → Settings → Rules → Rulesets → New branch ruleset**
+   - Name `require-ci-gate`, Enforcement **Active**.
+   - Bypass list: none. Admins can still deploy fixes through a `hotfix/*` PR.
+   - Target repositories: **Include by property** `ci_gate` = `true`.
+     If property targeting isn't offered, use **Include by name** and list the opted-in repos instead (add each repo when it gets its `CI gate` job).
+   - Target branches: include `master`, `staging`, `dev` (by name; missing branches are ignored).
+   - Rule **Require status checks to pass**: add the check `CI gate`; leave "Require branches to be up to date" off (squash-only flow); "Do not require status checks on creation" on.
+   - Leave everything else to `protect-master` / `staging-protect` / `protect-dev`.
+4. Check it on one repo with `gh api repos/GB-News-Ltd/<repo>/rules/branches/staging`. The output must include `required_status_checks` with context `CI gate`.
+
+## Deploy only after CI
+
+A required check stops a PR from merging, but not an admin bypass or a manual workflow run. Every deploy workflow must therefore call the repo's `ci.yml` on the same commit and deploy only if it passed ([template](../../templates/workflows/deploy.yml)):
+
+```yaml
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+    permissions: { contents: read, pull-requests: write }
+    with: { skip-merge-guard: true }
+  deploy:
+    needs: ci
+    if: needs.ci.result == 'success'
+```
+
+Keep CodeQL in its own workflow (`codeql.yml`). Otherwise every caller of `ci.yml` has to grant `security-events: write`.
 
 ## Break-glass
 

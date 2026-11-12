@@ -8,7 +8,7 @@ Operating manual for GB News technology. Keep this short and link out.
 2. **Small reversible changes** — flags, forward-compatible migrations, clear rollback.
 3. **Owners are explicit** — every repo has a Lead/team in [`repo-metadata/repos.yml`](../../repo-metadata/repos.yml).
 4. **Tracked work** — every branch carries a ticket/issue ID; Jira specifically is optional.
-5. **One path to prod** — `dev` → `staging` → `master` (see [branching.md](branching.md)).
+5. **One path to prod** — `dev` → `staging` → `master` (or `main`) (see [branching.md](branching.md)).
 
 ## Branching & protection
 
@@ -59,7 +59,7 @@ Only long-lived branches map to running environments:
 
 | Branch | Environment | Deploy |
 |--------|-------------|--------|
-| `master` | Production | Auto on merge after smoke; tag `vX.Y.Z` |
+| `master` / `main` | Production | Auto on merge after smoke; tag `vX.Y.Z` |
 | `staging` | Staging / UAT | Auto on merge; QA regression |
 | `dev` | Dev / Integration | Auto on merge; branch-sanity |
 | `feature/*`, `bugfix/*`, `hotfix/*` | — | No preview env — local + CI only |

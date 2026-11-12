@@ -4,7 +4,9 @@ Apply to every product repo (Backend, Frontend Web, Android, iOS, Services, Pipe
 
 Also set repo-wide: **Allow squash merging only** (disable merge commits & rebase), **Automatically delete head branches**.
 
-## Shared settings (all of `master`, `staging`, `dev`)
+## Shared settings (all of `master` / `main`, `staging`, `dev`)
+
+The production branch is `master` or `main` (repos use one; workflows and rulesets cover both).
 
 - Require a pull request before merging
 - Do not allow bypassing the above settings (except break-glass admins, audited)
@@ -17,7 +19,7 @@ Also set repo-wide: **Allow squash merging only** (disable merge commits & rebas
 
 Wire required checks to the workflows in [`templates/workflows/`](../../templates/workflows/). The org requires **one** check, `CI gate`; see [Required check: CI gate](#required-check-ci-gate).
 
-## `master` (production)
+## `master` / `main` (production)
 
 | Rule | Value |
 |------|--------|
@@ -46,13 +48,13 @@ Wire required checks to the workflows in [`templates/workflows/`](../../template
 
 ## `feature/*`, `bugfix/*`, `hotfix/*`, …
 
-No branch protection on the head branch itself. Targets (`dev` / `master`) enforce PR + CI. Head branches auto-delete after squash merge.
+No branch protection on the head branch itself. Targets (`dev` / `staging` / `master` / `main`) enforce PR + CI. Head branches auto-delete after squash merge.
 
 ## Org ruleset sketch
 
 Create three rulesets targeting default + named branches:
 
-1. **protect-master** — ref `refs/heads/master`
+1. **protect-master** — refs `refs/heads/master` and `refs/heads/main`
 2. **protect-staging** — ref `refs/heads/staging`
 3. **protect-dev** — ref `refs/heads/dev`
 
@@ -80,7 +82,7 @@ Every product repo's `ci.yml` ends with a job named exactly **`CI gate`** ([temp
 
 1. **Organization → Settings → Repository → Custom properties → New property**
    - Name `ci_gate`, type **True/false**, default **false**, "Allow repository actors to set this property" **off**.
-2. On each repo whose `ci.yml` has the `CI gate` job on `master`, `staging` (and `dev` if used): **Organization → Settings → Custom properties**, select the repo, set `ci_gate` = `true`.
+2. On each repo whose `ci.yml` has the `CI gate` job on `master`/`main`, `staging` (and `dev` if used): **Organization → Settings → Custom properties**, select the repo, set `ci_gate` = `true`.
 3. **Organization → Settings → Rules → Rulesets → New branch ruleset**
    - Name `require-ci-gate`, Enforcement **Active**.
    - Bypass list: none. Admins can still deploy fixes through a `hotfix/*` PR.

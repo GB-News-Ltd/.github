@@ -16,8 +16,8 @@ Copy these into new **product** repositories (Backend, Frontend Web, Android, iO
 
 After copy:
 
-1. Create `master`, `staging`, `dev` (cut last two from `master`).
+1. Create `master` (or `main`), `staging`, `dev` (cut last two from the production branch). Workflows accept either name.
 2. Apply [branch protection](../docs/handbook/branch-protection.md) / org rulesets (squash-only, delete head branches).
-3. Opt in to the required check: set the custom property `ci_gate` to `true` on the repo. The org ruleset `require-ci-gate` then requires **CI gate** on `master`, `staging` and `dev`. Only do this once `ci.yml` with the `CI gate` job is on those branches, or every PR is blocked.
+3. Opt in to the required check: set the custom property `ci_gate` to `true` on the repo. The org ruleset `require-ci-gate` then requires **CI gate** on `master`/`main`, `staging` and `dev`. Only do this once `ci.yml` with the `CI gate` job is on those branches, or every PR is blocked.
 
 Also copy org community files only when you need to **override** defaults (SECURITY, CONTRIBUTING, issue forms).

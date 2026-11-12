@@ -6,7 +6,7 @@ name: Deploy
 
 on:
   push:
-    branches: [master, staging]
+    branches: [master, main, staging]
   workflow_dispatch:
 
 permissions:
@@ -28,7 +28,8 @@ jobs:
     needs: ci
     if: needs.ci.result == 'success'
     runs-on: ubuntu-latest
-    # environment: ${{ github.ref_name == 'master' && 'production' || 'staging' }}
+    # Production branch is master or main:
+    # environment: ${{ (github.ref_name == 'master' || github.ref_name == 'main') && 'production' || 'staging' }}
     permissions:
       contents: read
       id-token: write

@@ -86,10 +86,14 @@ Every product repo's `ci.yml` ends with a job named exactly **`CI gate`** ([temp
    - Bypass list: none. Admins can still deploy fixes through a `hotfix/*` PR.
    - Target repositories: **Include by property** `ci_gate` = `true`.
      If property targeting isn't offered, use **Include by name** and list the opted-in repos instead (add each repo when it gets its `CI gate` job).
-   - Target branches: include `master`, `staging`, `dev` (by name; missing branches are ignored).
+   - Target branches: include `master`, `main`, `staging`, `dev` (by name; missing branches are ignored). The production branch may be called `master` or `main`, so list both.
    - Rule **Require status checks to pass**: add the check `CI gate`; leave "Require branches to be up to date" off (squash-only flow); "Do not require status checks on creation" on.
    - Leave everything else to `protect-master` / `staging-protect` / `protect-dev`.
 4. Check it on one repo with `gh api repos/GB-News-Ltd/<repo>/rules/branches/staging`. The output must include `required_status_checks` with context `CI gate`.
+
+## Production branch: `master` or `main`
+
+The workflows and templates treat `master` and `main` the same: PRs into either may only come from `staging` or `hotfix/*` (the guard's `master_allowed`), and a deploy workflow deploys production from either. Rulesets must match. On 12 Nov 2026 no org ruleset protected `main` in any repo, including repos whose default branch is `main`, so anyone with write access could push to it. Add `refs/heads/main` to `protect-master` (and `require-ci-gate`) before any deploy workflow or `production` environment accepts `main`.
 
 ## Deploy only after CI
 

@@ -1,5 +1,6 @@
 # Product-repo CI aligned to GB News branching strategy.
 # Save as `.github/workflows/ci.yml` in Backend / Web / Mobile / Services / Pipelines repos.
+# The production branch may be called master or main; both are listed everywhere.
 #
 # The job named "CI gate" is the ONE required status check (org ruleset require-ci-gate,
 # see docs/handbook/branch-protection.md). Keep its name exactly "CI gate" and list every
@@ -20,8 +21,9 @@ on:
       - dev
       - staging
       - master
+      - main
   pull_request:
-    branches: [dev, staging, master]
+    branches: [dev, staging, master, main]
   workflow_call:
     inputs:
       skip-merge-guard:

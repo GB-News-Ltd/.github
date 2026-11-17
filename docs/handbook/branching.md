@@ -12,6 +12,7 @@ master  ←── staging  ←── dev  ←── feature/* | bugfix/* | chore
   └── hotfix/* ──cherry-pick───┴── also into staging
 ```
 
+- **The production branch is `master` or `main`** (a repo uses one; everything below that says `master` applies to `main` too).
 - **`dev` and `staging` are both cut from `master`**, not from each other.
 - Solid path: `feature|bugfix` → `dev` → `staging` → `master`.
 - Emergency path: `hotfix/*` cut from `master` → merge to `master` (or `staging` if not yet in prod) → cherry-pick into `staging` and `dev`.
@@ -20,7 +21,7 @@ master  ←── staging  ←── dev  ←── feature/* | bugfix/* | chore
 
 | Branch | Environment | Accepts merges from | Reviews | CI focus |
 |--------|-------------|---------------------|---------|----------|
-| `master` | Production | `staging` only; `hotfix/*` under emergency process | **2** approvals incl. QA Lead | Smoke / sanity on merge; auto-deploy prod |
+| `master` / `main` | Production | `staging` only; `hotfix/*` under emergency process | **2** approvals incl. QA Lead | Smoke / sanity on merge; auto-deploy prod |
 | `staging` | Staging / UAT | `dev` (release-ready subset); `hotfix/*` emergency | **1** + QA Lead sign-off | Full regression before cut to `master` |
 | `dev` | Dev / Integration | `feature/*`, `bugfix/*`, `chore/*`, `spike/*`, `hotfix/*` | **1** team Lead / designated | Branch-sanity, build, lint, unit |
 | `feature/*` | — (no env) | n/a (cut from `dev`) | 1 before merge to `dev` | Lint, unit, build on push |

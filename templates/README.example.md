@@ -10,7 +10,7 @@
 |--|--|
 | **Stack** | Backend / Frontend Web / Android / iOS / Services / Pipelines |
 | **Owner (Lead)** | `@GB-News-Ltd/<team-or-lead>` |
-| **Default branch** | `master` |
+| **Default branch** | `master` (or `main`) |
 | **Integration** | `dev` → `staging` → `master` |
 | **On-call** | Link to schedule |
 | **Runbook** | Link |
@@ -46,7 +46,7 @@ npm run dev
 |--------|-------------|---------|
 | `dev` | Dev / Integration | Merge to `dev` |
 | `staging` | Staging / UAT | Merge to `staging` |
-| `master` | Production | Merge to `master` (after smoke) |
+| `master` / `main` | Production | Merge to the production branch (after smoke) |
 
 ## Contributing
 

@@ -1,5 +1,12 @@
 # Product-repo CI aligned to GB News branching strategy.
 # Save as `.github/workflows/ci.yml` in Backend / Web / Mobile / Services / Pipelines repos.
+# The production branch may be called master or main; both are listed everywhere.
+#
+# The job named "CI gate" is the ONE required status check (org ruleset require-ci-gate,
+# see docs/handbook/branch-protection.md). Keep its name exactly "CI gate" and list every
+# CI job in its `needs`. A repo's deploy workflow calls this file (workflow_call) and
+# deploys only if it passes; see templates/workflows/deploy.yml.
+# CodeQL lives in codeql.yml so deploys never need security-events permissions.
 name: CI
 
 on:
@@ -14,18 +21,24 @@ on:
       - dev
       - staging
       - master
+      - main
   pull_request:
-    branches: [dev, staging, master]
+    branches: [dev, staging, master, main]
+  workflow_call:
+    inputs:
+      skip-merge-guard:
+        description: Skip the merge source guard (the CI run on the same PR already reports it)
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
-  security-events: write
-  actions: read
   pull-requests: write
 
 jobs:
   merge-source-guard:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && !inputs.skip-merge-guard
     uses: GB-News-Ltd/.github/.github/workflows/merge-source-guard.yml@main
 
   ci:
@@ -37,18 +50,19 @@ jobs:
       install-command: npm ci
     secrets: inherit
 
-  codeql:
-    if: github.event_name == 'pull_request' && github.base_ref == 'dev'
-    uses: GB-News-Ltd/.github/.github/workflows/codeql-analysis.yml@main
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-    with:
-      languages: javascript-typescript
+  # Add repo-specific jobs here, and to gate.needs.
 
-  # Deploy + environment-specific suites are repo-specific.
-  # Hook your CD (Argo / Octopus / etc.) on merge events:
-  #   merge → dev      : deploy Dev + branch-sanity
-  #   merge → staging  : deploy Staging + full regression; notify QA Lead
-  #   merge → master   : deploy Prod + smoke; tag vX.Y.Z; changelog
+  gate:
+    name: CI gate
+    if: always()
+    needs: [merge-source-guard, ci]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All checks passed
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Results: $RESULTS"
+          for r in $RESULTS; do
+            case "$r" in success|skipped) ;; *) echo "::error::A CI job did not pass ($r)"; exit 1 ;; esac
+          done

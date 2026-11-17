@@ -1,6 +1,7 @@
 name: Merge source guard (reusable)
 
-# Enforces allowed head-branch patterns when opening PRs into master / staging / dev.
+# Enforces allowed head-branch patterns when opening PRs into master (or main) / staging / dev.
+# The production branch may be called master or main; both use master_allowed.
 # GitHub branch protection cannot restrict source branch natively — this is the org workaround.
 
 on:
@@ -8,7 +9,7 @@ on:
 
     inputs:
       master_allowed:
-        description: Space-separated patterns allowed into master
+        description: Space-separated patterns allowed into master (or main)
         type: string
         required: false
         default: "staging hotfix/*"
@@ -57,13 +58,13 @@ jobs:
           echo "Head: $HEAD"
 
           case "$BASE" in
-            master)
+            master|main)
               # shellcheck disable=SC2086
               if match_any "$HEAD" $MASTER_ALLOWED; then
-                echo "OK: $HEAD → master"
+                echo "OK: $HEAD → $BASE"
                 exit 0
               fi
-              MSG="PRs into master must come from: ${MASTER_ALLOWED} (got: ${HEAD})"
+              MSG="PRs into ${BASE} must come from: ${MASTER_ALLOWED} (got: ${HEAD})"
               ;;
             staging)
               # shellcheck disable=SC2086

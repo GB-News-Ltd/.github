@@ -1,0 +1,41 @@
+# Deploy-after-CI pattern. Merge the `ci` job and the `needs:`/`if:` lines into the
+# repo's own deploy workflow; the deploy steps themselves are repo-specific.
+# Every run checks the same commit with ci.yml first and deploys only if it passed,
+# so an admin bypass, a direct push or a manual run cannot deploy unchecked code.
+name: Deploy
+
+on:
+  push:
+    branches: [master, main, staging]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    # Grant only what ci.yml needs (never id-token).
+    permissions:
+      contents: read
+      pull-requests: write
+    with:
+      skip-merge-guard: true
+    secrets: inherit
+
+  deploy:
+    needs: ci
+    if: needs.ci.result == 'success'
+    runs-on: ubuntu-latest
+    # Production branch is master or main:
+    # environment: ${{ (github.ref_name == 'master' || github.ref_name == 'main') && 'production' || 'staging' }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Repo-specific deploy goes here"
+
+  # A job that must run even when CI is skipped (e.g. deleting a PR preview on
+  # `pull_request: closed`) needs `if: always() && (... || needs.ci.result == 'success')`.

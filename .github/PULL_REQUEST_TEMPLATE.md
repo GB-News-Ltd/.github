@@ -28,8 +28,8 @@ Select the path this PR is on (must match [branching policy](https://github.com/
 
 - [ ] **Integration** — `feature|bugfix|chore|spike/*` → `dev`
 - [ ] **Release cut** — `dev` → `staging`
-- [ ] **Production** — `staging` → `master`
-- [ ] **Emergency** — `hotfix/*` → `master` or `staging`  
+- [ ] **Production** — `staging` → `master` / `main`
+- [ ] **Emergency** — `hotfix/*` → `master` / `main` or `staging`  
       - [ ] Labelled `emergency-merge`  
       - [ ] Cherry-pick plan for `staging` **and** `dev` documented below  
       - [ ] QA Lead acknowledgement recorded on this PR
@@ -66,7 +66,7 @@ Manual steps:
 |-----------|------------|
 | Blast radius | <!-- services, surfaces, audience segments --> |
 | Feature flag | <!-- name · default off? · n/a --> |
-| Rollback | <!-- revert squash · previous tag · flag off — required for `staging`/`master` --> |
+| Rollback | <!-- revert squash · previous tag · flag off — required for `staging`/`master`/`main` --> |
 | Data / migrations | <!-- none · expand/contract · dual-write · backfill --> |
 | Perf / cost | <!-- n/a · expected delta --> |
 | Security / privacy | <!-- authz, PII, secrets — n/a if untouched --> |

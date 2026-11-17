@@ -1,0 +1,22 @@
+# CodeQL on PRs into dev. Save as `.github/workflows/codeql.yml`.
+# Separate from ci.yml so that a deploy workflow calling ci.yml never needs
+# security-events permissions. Private repos need GitHub Code Security enabled.
+# Not part of CI gate unless the repo decides to make it so.
+name: CodeQL
+
+on:
+  pull_request:
+    branches: [dev]
+
+permissions:
+  contents: read
+
+jobs:
+  codeql:
+    uses: GB-News-Ltd/.github/.github/workflows/codeql-analysis.yml@main
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    with:
+      languages: javascript-typescript
